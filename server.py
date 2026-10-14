@@ -3,8 +3,8 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-# async_mode='eventlet' ensures public web socket hosting works smoothly online
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+# Standard initialization without eventlet
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 @app.route('/')
 def user_view():
@@ -25,6 +25,5 @@ def handle_operator_message(data):
     emit('new_response_to_user', {'message': operator_text}, broadcast=True)
 
 if __name__ == '__main__':
-    # Cloud platforms pass a dynamic port via environment variables
     port = int(os.environ.get("PORT", 5000))
     socketio.run(app, host='0.0.0.0', port=port)
