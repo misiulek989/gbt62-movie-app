@@ -5,36 +5,42 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
         body { background: #1a0000; color: #ff3333; font-family: monospace; padding: 40px; }
-        .box { border: 1px solid #ff3333; background: #000; padding: 20px; margin-bottom: 20px; height: 150px; overflow-y: scroll; }
-        input { width: 75%; padding: 12px; background: #222; border: 1px solid #ff3333; color: #fff; font-family: monospace; }
-        button { width: 20%; padding: 12px; background: #ff3333; color: #fff; font-weight: bold; border: none; cursor: pointer; }
+        .box { border: 1px solid #ff3333; background: #000; padding: 20px; margin-bottom: 20px; height: 200px; overflow-y: scroll; }
+        input { width: 40%; padding: 12px; background: #222; border: 1px solid #ff3333; color: #fff; font-family: monospace; margin-right: 10px; }
+        button { width: 25%; padding: 12px; background: #ff3333; color: #fff; font-weight: bold; border: none; cursor: pointer; }
+        .prompt-item { margin-bottom: 12px; border-bottom: 1px dashed #444; padding-bottom: 8px; }
     </style>
 </head>
 <body>
     <h1>⚠️ [OPERATOR OVERRIDE: YOU ARE CURRENTLY GBT6.2]</h1>
     
-    <h3>Incoming User Prompt:</h3>
+    <h3>Incoming Prompts:</h3>
     <div id="incoming-prompt" class="box">Waiting for user input...</div>
 
-    <h3>Type Your Response (Manual Override):</h3>
-    <input type="text" id="operator_input" placeholder="Type what GBT6.2 will say..." autocomplete="off">
-    <button onclick="sendResponse()">TRANSMIT AS GBT6.2</button>
+    <h3>Reply Console:</h3>
+    <input type="text" id="task_id_input" placeholder="Task ID..." autocomplete="off">
+    <input type="text" id="operator_input" placeholder="Type response as GBT6.2..." autocomplete="off">
+    <button onclick="sendResponse()">TRANSMIT REPLY</button>
 
     <script>
         const socket = io();
 
-        // Automatically listens for new user prompts in real-time without refreshing
         socket.on('new_prompt_for_operator', function(data) {
             const promptBox = document.getElementById('incoming-prompt');
-            // Appends the new message dynamically
-            promptBox.innerHTML += `<div><b>User asked:</b> ${data.message}</div>`;
+            promptBox.innerHTML += `
+                <div class="prompt-item">
+                    <b>[Task: ${data.task_id}]</b> ${data.message}
+                </div>`;
             promptBox.scrollTop = promptBox.scrollHeight;
+            document.getElementById('task_id_input').value = data.task_id;
         });
 
         function sendResponse() {
+            const taskId = document.getElementById('task_id_input').value;
             const input = document.getElementById('operator_input');
-            if (!input.value) return;
-            socket.emit('send_from_operator', { message: input.value });
+            if (!taskId || !input.value) return;
+            
+            socket.emit('send_from_operator', { task_id: taskId, message: input.value });
             input.value = '';
         }
     </script>
