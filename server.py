@@ -13,7 +13,7 @@ app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Discord Configuration
-DISCORD_TOKEN = "YOUR_DISCORD_BOT_TOKEN_HERE"
+DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN")
 latest_discord_channel = None
 
 # Setup Discord Bot client
