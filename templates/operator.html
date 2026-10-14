@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GBT6.2 OPERATOR OVERRIDE CONSOLE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body { background: #1a0000; color: #ff3333; font-family: monospace; padding: 40px; }
+        .box { border: 1px solid #ff3333; background: #000; padding: 20px; margin-bottom: 20px; height: 150px; overflow-y: scroll; }
+        input { width: 75%; padding: 12px; background: #22, 22, 22; background: #222; border: 1px solid #ff3333; color: #fff; font-family: monospace; }
+        button { width: 20%; padding: 12px; background: #ff3333; color: #fff; font-weight: bold; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>⚠️ [OPERATOR OVERRIDE: YOU ARE CURRENTLY GBT6.2]</h1>
+
+    <h3>Incoming User Prompt:</h3>
+    <div id="incoming-prompt" class="box">Waiting for user input...</div>
+
+    <h3>Type Your Response (Manual Override):</h3>
+    <input type="text" id="operator_input" placeholder="Type what GBT6.2 will say..." autocomplete="off">
+    <button onclick="sendResponse()">TRANSMIT AS GBT6.2</button>
+
+    <script>
+        const socket = io();
+
+        socket.on('new_prompt_for_operator', function(data) {
+            document.getElementById('incoming-prompt').innerHTML = `<b>User asked:</b> ${data.message}`;
+        });
+
+        function sendResponse() {
+            const input = document.getElementById('operator_input');
+            if (!input.value) return;
+            socket.emit('send_from_operator', { message: input.value });
+            input.value = '';
+        }
+    </script>
+</body>
+</html>

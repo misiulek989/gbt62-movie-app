@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GBT6.2 Live Terminal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body { background: #0b0f19; color: #00ffcc; font-family: monospace; padding: 40px; }
+        #chat-box { width: 100%; height: 400px; border: 1px solid #00ffcc; background: #000; padding: 15px; overflow-y: scroll; margin-bottom: 20px; }
+        input { width: 80%; padding: 10px; background: #111; border: 1px solid #00ffcc; color: #fff; font-family: monospace; }
+        button { width: 15%; padding: 10px; background: #00ffcc; color: #000; font-weight: bold; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>[GBT6.2 AUTONOMOUS INTERFACE // ACTIVE SESSION]</h1>
+    <div id="chat-box"></div>
+    <input type="text" id="message_input" placeholder="Type prompt to GBT6.2..." autocomplete="off">
+    <button onclick="sendMessage()">SEND</button>
+
+    <script>
+        const socket = io();
+        const chatBox = document.getElementById('chat-box');
+
+        function appendMessage(sender, text) {
+            chatBox.innerHTML += `<div><b>${sender}:</b> ${text}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('message_input');
+            if (!input.value) return;
+            appendMessage('USER', input.value);
+            socket.emit('send_from_user', { message: input.value });
+            input.value = '';
+        }
+
+        socket.on('new_response_to_user', function(data) {
+            appendMessage('GBT6.2', data.message);
+        });
+    </script>
+</body>
+</html>
