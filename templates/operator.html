@@ -6,13 +6,13 @@
     <style>
         body { background: #1a0000; color: #ff3333; font-family: monospace; padding: 40px; }
         .box { border: 1px solid #ff3333; background: #000; padding: 20px; margin-bottom: 20px; height: 150px; overflow-y: scroll; }
-        input { width: 75%; padding: 12px; background: #22, 22, 22; background: #222; border: 1px solid #ff3333; color: #fff; font-family: monospace; }
+        input { width: 75%; padding: 12px; background: #222; border: 1px solid #ff3333; color: #fff; font-family: monospace; }
         button { width: 20%; padding: 12px; background: #ff3333; color: #fff; font-weight: bold; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
     <h1>⚠️ [OPERATOR OVERRIDE: YOU ARE CURRENTLY GBT6.2]</h1>
-
+    
     <h3>Incoming User Prompt:</h3>
     <div id="incoming-prompt" class="box">Waiting for user input...</div>
 
@@ -23,8 +23,12 @@
     <script>
         const socket = io();
 
+        // Automatically listens for new user prompts in real-time without refreshing
         socket.on('new_prompt_for_operator', function(data) {
-            document.getElementById('incoming-prompt').innerHTML = `<b>User asked:</b> ${data.message}`;
+            const promptBox = document.getElementById('incoming-prompt');
+            // Appends the new message dynamically
+            promptBox.innerHTML += `<div><b>User asked:</b> ${data.message}</div>`;
+            promptBox.scrollTop = promptBox.scrollHeight;
         });
 
         function sendResponse() {
