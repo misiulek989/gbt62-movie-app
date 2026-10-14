@@ -1,9 +1,11 @@
+import eventlet
+eventlet.monkey_patch()
+
 import os
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-# Standard initialization without eventlet
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 @app.route('/')
